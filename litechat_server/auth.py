@@ -50,19 +50,18 @@ def verify_challenge_signature(username: str, signature_b64: str, db: Session) -
         pubkey = _load_pubkey(user.public_key)
         signature_bytes = b64decode(signature_b64)
         signature = PGPSignature.from_blob(signature_bytes)
-        message = PGPMessage.new(challenge)
-        return pubkey.verify(message, signature)
+        # Verify detached signature over the raw challenge string (not wrapped in PGPMessage)
+        return pubkey.verify(challenge, signature)
     except Exception:
         return False
 
 
 def verify_message_signature(pub_key_str: str, ciphertext: str, signature_b64: str) -> bool:
-    """Validate that *signature_b64* is a valid signature over *ciphertext* given *pub_key_str*."""
+    """Validate that *signature_b64* is a valid detached signature over *ciphertext* given *pub_key_str*."""
     try:
         pubkey = _load_pubkey(pub_key_str)
         signature = PGPSignature.from_blob(b64decode(signature_b64))
-        msg = PGPMessage.new(ciphertext)
-        return pubkey.verify(msg, signature)
+        return pubkey.verify(ciphertext, signature)
     except Exception:
         return False
 
