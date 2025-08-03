@@ -15,6 +15,15 @@ app = FastAPI(title="LiteChat API", version="0.1.0")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/verify")
 
 
+# --------------------------- Health Check ---------------------------
+
+
+@app.get("/health")
+def health_check():
+    """Simple health check endpoint for connectivity testing."""
+    return {"status": "healthy", "service": "LiteChat API"}
+
+
 # Dependency that extracts the current user from the Authorization header
 
 def get_current_user(
