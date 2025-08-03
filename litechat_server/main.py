@@ -2,6 +2,7 @@ from typing import List, Optional
 
 import jwt
 from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
@@ -11,6 +12,15 @@ from . import auth, database, models, schemas, utils
 models.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI(title="LiteChat API", version="0.1.0")
+
+# Add CORS middleware to allow web client requests
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/verify")
 
